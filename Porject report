@@ -1,0 +1,59 @@
+# Project Report: PPE Detection using YOLO-NAS
+
+**Author:** Apoorva Singh
+
+**Registration No.:** 24bac10011
+
+## 1. Project Overview
+
+This project focuses on developing an automated computer vision pipeline for identifying Personal Protective Equipment (PPE) in industrial, manufacturing, and construction environments. By leveraging the advanced YOLO-NAS architecture, the system is designed to detect essential safety gear to assist in automated safety compliance monitoring and risk mitigation.
+
+## 2. Technical Stack & Environment
+
+The project is configured for execution within a Google Colab environment, utilizing GPU acceleration to handle the computationally intensive tasks of deep learning training and inference.
+
+| Component | Specification / Role |
+| --- | --- |
+| **Framework** | SuperGradients (v3.1.0) |
+| **Architecture** | YOLO-NAS |
+| **Dataset API** | Roboflow |
+| **Utilities** | `imutils`, `pytube` (upgraded for media processing) |
+| **Hardware** | Google Colab GPU Instance |
+
+## 3. Dataset Configuration
+
+The image data is imported directly into the training environment using the Roboflow API. The dataset is structured in the YOLOv5 PyTorch format and is pre-partitioned into training, validation, and testing directories.
+
+**Target Detection Classes:**
+
+* Dust Mask
+* Eye Wear
+* Glove
+* Protective Boots
+* Protective Helmet
+* Safety Vest
+* Shield
+
+### Data Augmentation Pipeline
+
+To improve model generalization and robustness against varying environmental conditions (such as lighting changes, occlusions, and camera angles), the training data loader applies the following sequential augmentations:
+
+* **DetectionMosaic:** Combines multiple images into a single training sample to teach the model to detect objects at smaller scales.
+* **DetectionRandomAffine:** Applies spatial transformations, specifically configured to a 10.42-degree rotation, to simulate varied camera angles.
+* **DetectionMixup:** Blends overlapping image features to smooth decision boundaries.
+* **DetectionHSV:** Alters hue, saturation, and value to simulate indoor and outdoor lighting variance.
+* **DetectionHorizontalFlip:** Mirrors images horizontally to increase spatial diversity.
+
+## 4. Training Configuration
+
+The model training is orchestrated using the SuperGradients `Trainer` module, which manages the training loop, metric tracking, and weight preservation.
+
+* **Experiment Name:** `ppe_yolonas_run`
+* **Storage Path:** Model weights and logs are saved to the local `checkpoints` directory.
+* **Data Loaders:** The dataset is mapped utilizing `coco_detection_yolo_format_train` and `coco_detection_yolo_format_val`.
+* **Batch Size:** 16
+* **Number of Workers:** 2
+
+## 5. Security and Deployment Considerations
+
+A critical security review of the deployment code indicates the presence of a hardcoded Roboflow API key. Before transitioning this project from a local/Colab environment to a public repository (such as GitHub) or a production server, it is strictly recommended to revoke the exposed key in the Roboflow developer dashboard. Future iterations of the codebase should utilize secure environment variables or a `.env` configuration file to handle authentication credentials, ensuring the workspace remains secure against unauthorized access.
